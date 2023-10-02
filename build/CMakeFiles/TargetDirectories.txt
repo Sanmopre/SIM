@@ -1,0 +1,3 @@
+/home/sanmopre/SIM/build/CMakeFiles/box_test.dir
+/home/sanmopre/SIM/build/CMakeFiles/edit_cache.dir
+/home/sanmopre/SIM/build/CMakeFiles/rebuild_cache.dir
