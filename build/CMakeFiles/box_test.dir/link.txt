@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/box_test.dir/src/main.cpp.o CMakeFiles/box_test.dir/src/shaderManager.cpp.o -o box_test  /opt/vcpkg/installed/x64-linux/lib/libPhysXCommon_static_64.a /opt/vcpkg/installed/x64-linux/debug/lib/libglfw3.a /opt/vcpkg/installed/x64-linux/debug/lib/libglad.a /usr/lib/librt.a -lm -ldl /usr/lib/libX11.so /opt/vcpkg/installed/x64-linux/debug/lib/libfmtd.a 

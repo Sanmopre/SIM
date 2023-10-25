@@ -1,171 +1,231 @@
-#include "config.h"
-#include "PxPhysicsAPI.h"
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "logger.h"
+#include "raylib.h"
+#include "raymath.h"
 
-#include <iostream>
-#include <cmath>
+#define FLT_MAX     340282346638528859811704183484516925440.0f     // Maximum value of a float, from bit pattern 01111111011111111111111111111111
 
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
-
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
-int main()
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
 {
-    InitLogger();
-    spdlog::info("This is an info message.");
-    spdlog::error("This is an error message.");
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 800;
+    const int screenHeight = 450;
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
+    InitWindow(screenWidth, screenHeight, "raylib [models] example - mesh picking");
+
+    // Define the camera to look into our 3d world
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 20.0f, 20.0f, 20.0f }; // Camera position
+    camera.target = (Vector3){ 0.0f, 8.0f, 0.0f };      // Camera looking at point
+    camera.up = (Vector3){ 0.0f, 1.6f, 0.0f };          // Camera up vector (rotation towards target)
+    camera.fovy = 45.0f;                                // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+
+    Ray ray = { 0 };        // Picking ray
+
+    Model tower = LoadModel("castle.obj");                 // Load OBJ model
+    Texture2D texture = LoadTexture("castle_diffuse.png"); // Load model texture
+    tower.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set model diffuse texture
+
+    Vector3 towerPos = { 0.0f, 0.0f, 0.0f };                        // Set model position
+    BoundingBox towerBBox = GetMeshBoundingBox(tower.meshes[0]);    // Get mesh bounding box
+
+    // Ground quad
+    Vector3 g0 = (Vector3){ -50.0f, 0.0f, -50.0f };
+    Vector3 g1 = (Vector3){ -50.0f, 0.0f,  50.0f };
+    Vector3 g2 = (Vector3){  50.0f, 0.0f,  50.0f };
+    Vector3 g3 = (Vector3){  50.0f, 0.0f, -50.0f };
+
+    // Test triangle
+    Vector3 ta = (Vector3){ -25.0f, 0.5f, 0.0f };
+    Vector3 tb = (Vector3){ -4.0f, 2.5f, 1.0f };
+    Vector3 tc = (Vector3){ -8.0f, 6.5f, 0.0f };
+
+    Vector3 bary = { 0.0f, 0.0f, 0.0f };
+
+    // Test sphere
+    Vector3 sp = (Vector3){ -30.0f, 5.0f, 5.0f };
+    float sr = 4.0f;
+
+    SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
+    //--------------------------------------------------------------------------------------
+    // Main game loop
+    while (!WindowShouldClose())        // Detect window close button or ESC key
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
+        // Update
+        //----------------------------------------------------------------------------------
+        if (IsCursorHidden()) UpdateCamera(&camera, CAMERA_FIRST_PERSON);          // Update camera
+
+        // Toggle camera controls
+        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+        {
+            if (IsCursorHidden()) EnableCursor();
+            else DisableCursor();
+        }
+
+        // Display information about closest hit
+        RayCollision collision = { 0 };
+        char *hitObjectName = "None";
+        collision.distance = FLT_MAX;
+        collision.hit = false;
+        Color cursorColor = WHITE;
+
+        // Get ray and test against objects
+        ray = GetMouseRay(GetMousePosition(), camera);
+
+        // Check ray collision against ground quad
+        RayCollision groundHitInfo = GetRayCollisionQuad(ray, g0, g1, g2, g3);
+
+        if ((groundHitInfo.hit) && (groundHitInfo.distance < collision.distance))
+        {
+            collision = groundHitInfo;
+            cursorColor = GREEN;
+            hitObjectName = "Ground";
+        }
+
+        // Check ray collision against test triangle
+        RayCollision triHitInfo = GetRayCollisionTriangle(ray, ta, tb, tc);
+
+        if ((triHitInfo.hit) && (triHitInfo.distance < collision.distance))
+        {
+            collision = triHitInfo;
+            cursorColor = PURPLE;
+            hitObjectName = "Triangle";
+
+            bary = Vector3Barycenter(collision.point, ta, tb, tc);
+        }
+
+        // Check ray collision against test sphere
+        RayCollision sphereHitInfo = GetRayCollisionSphere(ray, sp, sr);
+
+        if ((sphereHitInfo.hit) && (sphereHitInfo.distance < collision.distance))
+        {
+            collision = sphereHitInfo;
+            cursorColor = ORANGE;
+            hitObjectName = "Sphere";
+        }
+
+        // Check ray collision against bounding box first, before trying the full ray-mesh test
+        RayCollision boxHitInfo = GetRayCollisionBox(ray, towerBBox);
+
+        if ((boxHitInfo.hit) && (boxHitInfo.distance < collision.distance))
+        {
+            collision = boxHitInfo;
+            cursorColor = ORANGE;
+            hitObjectName = "Box";
+
+            // Check ray collision against model meshes
+            RayCollision meshHitInfo = { 0 };
+            for (int m = 0; m < tower.meshCount; m++)
+            {
+                // NOTE: We consider the model.transform for the collision check but 
+                // it can be checked against any transform Matrix, used when checking against same
+                // model drawn multiple times with multiple transforms
+                meshHitInfo = GetRayCollisionMesh(ray, tower.meshes[m], tower.transform);
+                if (meshHitInfo.hit)
+                {
+                    // Save the closest hit mesh
+                    if ((!collision.hit) || (collision.distance > meshHitInfo.distance)) collision = meshHitInfo;
+                    
+                    break;  // Stop once one mesh collision is detected, the colliding mesh is m
+                }
+            }
+
+            if (meshHitInfo.hit)
+            {
+                collision = meshHitInfo;
+                cursorColor = ORANGE;
+                hitObjectName = "Mesh";
+            }
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+
+            BeginMode3D(camera);
+
+                // Draw the tower
+                // WARNING: If scale is different than 1.0f,
+                // not considered by GetRayCollisionModel()
+                DrawModel(tower, towerPos, 1.0f, WHITE);
+
+                // Draw the test triangle
+                DrawLine3D(ta, tb, PURPLE);
+                DrawLine3D(tb, tc, PURPLE);
+                DrawLine3D(tc, ta, PURPLE);
+
+                // Draw the test sphere
+                DrawSphereWires(sp, sr, 8, 8, PURPLE);
+
+                // Draw the mesh bbox if we hit it
+                if (boxHitInfo.hit) DrawBoundingBox(towerBBox, LIME);
+
+                // If we hit something, draw the cursor at the hit point
+                if (collision.hit)
+                {
+                    DrawCube(collision.point, 0.3f, 0.3f, 0.3f, cursorColor);
+                    DrawCubeWires(collision.point, 0.3f, 0.3f, 0.3f, RED);
+
+                    Vector3 normalEnd;
+                    normalEnd.x = collision.point.x + collision.normal.x;
+                    normalEnd.y = collision.point.y + collision.normal.y;
+                    normalEnd.z = collision.point.z + collision.normal.z;
+
+                    DrawLine3D(collision.point, normalEnd, RED);
+                }
+
+                DrawRay(ray, MAROON);
+
+                DrawGrid(10, 10.0f);
+
+            EndMode3D();
+
+            // Draw some debug GUI text
+            DrawText(TextFormat("Hit Object: %s", hitObjectName), 10, 50, 10, BLACK);
+
+            if (collision.hit)
+            {
+                int ypos = 70;
+
+                DrawText(TextFormat("Distance: %3.2f", collision.distance), 10, ypos, 10, BLACK);
+
+                DrawText(TextFormat("Hit Pos: %3.2f %3.2f %3.2f",
+                                    collision.point.x,
+                                    collision.point.y,
+                                    collision.point.z), 10, ypos + 15, 10, BLACK);
+
+                DrawText(TextFormat("Hit Norm: %3.2f %3.2f %3.2f",
+                                    collision.normal.x,
+                                    collision.normal.y,
+                                    collision.normal.z), 10, ypos + 30, 10, BLACK);
+
+                if (triHitInfo.hit && TextIsEqual(hitObjectName, "Triangle"))
+                    DrawText(TextFormat("Barycenter: %3.2f %3.2f %3.2f",  bary.x, bary.y, bary.z), 10, ypos + 45, 10, BLACK);
+            }
+
+            DrawText("Right click mouse to toggle camera controls", 10, 430, 10, GRAY);
+
+            DrawText("(c) Turret 3D model by Alberto Cano", screenWidth - 200, screenHeight - 20, 10, GRAY);
+
+            DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
     }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+    UnloadModel(tower);         // Unload model
+    UnloadTexture(texture);     // Unload texture
 
+    CloseWindow();              // Close window and OpenGL context
+    //--------------------------------------------------------------------------------------
 
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-
-
-
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    }; 
-
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0); 
-
-
-
-    // render loop
-    while (!glfwWindowShouldClose(window))
-    {
-        // input
-        processInput(window);
-
-        // render
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // draw our first triangle
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, 3);
- 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    glfwTerminate();
     return 0;
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }

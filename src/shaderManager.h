@@ -1,1 +1,0 @@
-const char* readFileContent(const char* filePath);
