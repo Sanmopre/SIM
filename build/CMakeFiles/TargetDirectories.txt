@@ -1,3 +1,0 @@
-/home/sanmopre/Documents/GitHub/SIM/build/CMakeFiles/MyExecutable.dir
-/home/sanmopre/Documents/GitHub/SIM/build/CMakeFiles/edit_cache.dir
-/home/sanmopre/Documents/GitHub/SIM/build/CMakeFiles/rebuild_cache.dir
