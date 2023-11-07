@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(MyProject)
-set(CMAKE_PREFIX_PATH "/home/sanmopre/vcpkg/installed/x64-linux")
+
+if(WIN32)
+    set(CMAKE_PREFIX_PATH "D:/Repos/vcpkg/installed/x64-windows")
+else()
+    set(CMAKE_PREFIX_PATH "/home/sanmopre/vcpkg/installed/x64-linux")
+endif()
+
+
 find_package(raylib CONFIG REQUIRED)
 
 # Add all .cpp files under the src folder

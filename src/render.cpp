@@ -16,9 +16,9 @@ bool Render::LoadConfig(std::string config_file)
 
 bool Render::Start() 
 {
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    camera.position = Vector3{ 0.0f, 10.0f, 10.0f };  // Camera position
+    camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
@@ -61,7 +61,7 @@ bool Render::Update(double delta_time)
         currentSpeed = -speed * delta_time;
 
     //camera.up = (Vector3){ 0.0f, angle, 0.0f };  
-    UpdateCameraPro(&camera, (Vector3){ currentSpeed, 0.0f, 0.0f }, (Vector3){ angle.x, angle.y, 0.0f }, 0.0f);  // Update camera
+    UpdateCameraPro(&camera, Vector3{ currentSpeed, 0.0f, 0.0f }, Vector3{ angle.x, angle.y, 0.0f }, 0.0f);  // Update camera
 
 
 
@@ -70,7 +70,7 @@ bool Render::Update(double delta_time)
     
         BeginMode3D(camera);
 
-        DrawModelEx(model, (Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){ 1.0f, 0.0f, 0.0f }, 0.0f, (Vector3){ 0.20f, 0.20f, 0.20f }, WHITE);
+        DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 0.20f, 0.20f, 0.20f }, WHITE);
         DrawGrid(10, 1.0f);
 
         EndMode3D();

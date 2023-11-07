@@ -16,7 +16,7 @@ public:
     virtual bool Update(double delta_time) override;
     virtual void Cleanup() override;
 
-    Camera3D* GetCamera(uint index);
+    //Camera3D* GetCamera(uint index);
     Camera3D* GetMainCamera();
 private:
     // Private members
