@@ -5,7 +5,7 @@ project(MyProject)
 if(WIN32)
     set(CMAKE_PREFIX_PATH "D:/Repos/vcpkg/installed/x64-windows")
 else()
-    set(CMAKE_PREFIX_PATH "/home/sanmopre/vcpkg/installed/x64-linux")
+    set(CMAKE_PREFIX_PATH "/media/sanmopre/Nuevo vol/Repos/vcpkg/installed/x64-linux")
 endif()
 
 
