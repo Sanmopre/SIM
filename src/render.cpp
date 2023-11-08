@@ -16,12 +16,14 @@ bool Render::LoadConfig(std::string config_file)
 
 bool Render::Start() 
 {
-    camera.position = Vector3{ 0.0f, 10.0f, 10.0f };  // Camera position
-    camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+// create a simple 3d camera that moves with the arrow keys and rotates with the mouse
+camera.position = Vector3{ 0.0f, 10.0f, 10.0f };  // Camera position
+camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+camera.fovy = 45.0f;                                // Camera field-of-view Y
+camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
+    
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
@@ -37,33 +39,18 @@ bool Render::Start()
 
 bool Render::Update(double delta_time) 
 {
-    if(IsKeyDown(KEY_ESCAPE))
+    if(IsKeyDown(KEY_ESCAPE)) 
         return false;
 
+    if(IsKeyDown(KEY_LEFT_SHIFT)) 
+        camera.position.y -= 0.2f;
+
+    if(IsKeyDown(KEY_SPACE)) 
+        camera.position.y += 0.2f;
 
 
-    angle.y = 0.0f;
-    angle.x = 0.0f;
-
-    if(IsKeyDown(KEY_UP)) 
-        angle.y = -rotationSpeed * delta_time;
-    if(IsKeyDown(KEY_DOWN)) 
-        angle.y = rotationSpeed * delta_time; 
-    if(IsKeyDown(KEY_LEFT)) 
-        angle.x = -rotationSpeed * delta_time;
-    if(IsKeyDown(KEY_RIGHT)) 
-        angle.x = rotationSpeed * delta_time; 
-
-    float currentSpeed = 0.0f;
-    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)) 
-        currentSpeed = speed * delta_time;
-    if(IsMouseButtonDown(MOUSE_RIGHT_BUTTON))   
-        currentSpeed = -speed * delta_time;
-
-    //camera.up = (Vector3){ 0.0f, angle, 0.0f };  
-    UpdateCameraPro(&camera, Vector3{ currentSpeed, 0.0f, 0.0f }, Vector3{ angle.x, angle.y, 0.0f }, 0.0f);  // Update camera
-
-
+    DisableCursor();
+    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
