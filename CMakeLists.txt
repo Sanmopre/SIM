@@ -10,6 +10,9 @@ endif()
 
 
 find_package(raylib CONFIG REQUIRED)
+find_package(unofficial-noise CONFIG REQUIRED)
+
+
 
 # Add all .cpp files under the src folder
 file(GLOB SOURCES "src/*.cpp")
@@ -18,3 +21,4 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(MyExecutable ${SOURCES})
 
 target_link_libraries(MyExecutable PRIVATE raylib)
+target_link_libraries(MyExecutable PRIVATE unofficial::noise::noise-static)

@@ -1,6 +1,7 @@
 #include "module.h"
 #include "raylib.h"
 #include <string>
+#include "noise/noise.h"
 
 class Render : public Module {
 public:
