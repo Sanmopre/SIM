@@ -29,11 +29,10 @@ camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
     SetTargetFPS(targetFPS);
 
-    model = LoadModel("models/cottage_obj.obj");                    // Load the animated model mesh and basic data
-    texture = LoadTexture("models/cottage_textures/cottage_diffuse.png");  
-    texture2 = LoadTexture("models/cottage_textures/cottage_normal.png");        // Load model texture and set material
+    model = LoadModel("models/sirtap.obj");        
+
     SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture); 
-    SetMaterialTexture(&model.materials[1], MATERIAL_MAP_NORMAL, texture2); 
+
     return true;
 }
 
@@ -56,7 +55,7 @@ bool Render::Update(double delta_time)
     ClearBackground(RAYWHITE);
     
         BeginMode3D(camera);
-
+        DrawTriangle3D(Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 10.0f, 10.0f }, Vector3{ 0.0f, 0.0f, 10.0f }, Color{ 255, 0, 0, 255 });   
         DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 0.20f, 0.20f, 0.20f }, WHITE);
         DrawGrid(10, 1.0f);
 
