@@ -1,7 +1,11 @@
+#ifndef ENGINE_H
+#define ENGINE_H
+
 #include <string>
 #include <vector>
 #include "module.h"
 #include "render.h"
+#include "mapGenerator.h"
 
 class Engine {
 public:
@@ -13,6 +17,9 @@ public:
     void Cleanup();
 
     Render* render = nullptr;
+    MapGenerator* mapGenerator = nullptr;
+
+
 
 private:
 
@@ -20,3 +27,7 @@ private:
     std::vector<Module*> modules;
 
 };
+
+extern Engine* engine;
+
+#endif // ENGINE_H

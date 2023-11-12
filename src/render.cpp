@@ -1,8 +1,8 @@
 #include "render.h"
+#include "engine.h"
 #include <iostream>
 
 Render::Render(std::string name) : Module(name) {
-
 }
 
 Render::~Render() {
@@ -29,7 +29,7 @@ camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
     SetTargetFPS(targetFPS);
 
-    model = LoadModel("models/sirtap.obj");        
+    model = LoadModel("../models/sirtap.obj");        
 
     SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture); 
 
@@ -55,7 +55,8 @@ bool Render::Update(double delta_time)
     ClearBackground(RAYWHITE);
     
         BeginMode3D(camera);
-        DrawTriangle3D(Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 10.0f, 10.0f }, Vector3{ 0.0f, 0.0f, 10.0f }, Color{ 255, 0, 0, 255 });   
+        DrawTriangleStrip3D(engine->mapGenerator->GetVertices(), engine->mapGenerator->GetVerticesSize(), RED);
+        //DrawTriangle3D(Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 10.0f, 10.0f }, Vector3{ 0.0f, 0.0f, 10.0f }, Color{ 255, 0, 0, 255 });   
         DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 0.20f, 0.20f, 0.20f }, WHITE);
         DrawGrid(10, 1.0f);
 

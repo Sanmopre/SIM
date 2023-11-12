@@ -1,3 +1,6 @@
+#ifndef RENDER_H
+#define RENDER_H
+
 #include "module.h"
 #include "raylib.h"
 #include <string>
@@ -31,3 +34,5 @@ private:
 
     Vector2 angle = { 0.0f, 0.0f };
 };
+
+#endif // RENDER_H

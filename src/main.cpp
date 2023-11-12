@@ -1,18 +1,20 @@
 #include "engine.h"
 #include "globals.h"
 
+Engine* engine = nullptr;
+
 int main(void)
 {
-    Engine engine = Engine();
-    engine.LoadConfig("config.xml");   
-    engine.Start();
+    engine = new Engine();
+    engine->LoadConfig("config.xml");   
+    engine->Start();
 
     bool running = true;
     while(running)
     {
-        running = engine.Update();
+        running = engine->Update();
     }
     
-    engine.Cleanup();
+    engine->Cleanup();
     return 0;
 }

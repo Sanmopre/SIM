@@ -5,6 +5,9 @@
 Engine::Engine()
 {
     render = new Render("render");
+    mapGenerator = new MapGenerator("mapGenerator");
+
+    modules.push_back(mapGenerator);
     modules.push_back(render);
 }
 
