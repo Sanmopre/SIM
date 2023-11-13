@@ -55,5 +55,13 @@ void MapGenerator::Cleanup()
 
 }
 
+void MapGenerator::DrawMap()
+{
+    for (int i = 0; i < vertices.size(); i += 3) 
+    {
+        DrawTriangle3D(vertices[i], vertices[i + 1], vertices[i + 2], RED);
+    }
+}
+
 
 

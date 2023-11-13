@@ -55,8 +55,7 @@ bool Render::Update(double delta_time)
     ClearBackground(RAYWHITE);
     
         BeginMode3D(camera);
-        DrawTriangleStrip3D(engine->mapGenerator->GetVertices(), engine->mapGenerator->GetVerticesSize(), RED);
-        //DrawTriangle3D(Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 10.0f, 10.0f }, Vector3{ 0.0f, 0.0f, 10.0f }, Color{ 255, 0, 0, 255 });   
+        engine->mapGenerator->DrawMap();
         DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 0.20f, 0.20f, 0.20f }, WHITE);
         DrawGrid(10, 1.0f);
 
@@ -70,3 +69,5 @@ void Render::Cleanup()
 {
     CloseWindow();
 }
+
+

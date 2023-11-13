@@ -25,7 +25,7 @@ public:
     virtual void Cleanup() override;
     Vector3* GetVertices() { return vertices.data(); }
     int GetVerticesSize() { return vertices.size(); }
-
+    void DrawMap();
     Triangle GetTriangle(int index)
     {
         return Triangle{ vertices[index], vertices[index + 1], vertices[index + 2] };
