@@ -16,9 +16,9 @@ public:
     virtual void Cleanup() override;
 
 private:
-    const int screenWidth = 700;
-    const int screenHeight = 700;
-    const int targetFPS = 60;
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
+    const int targetFPS = 144;
     const float rotationSpeed = 30.0f;
     const float speed = 10.0f;
     std::string windowTitle = "SIM";

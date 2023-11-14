@@ -13,6 +13,14 @@ struct Triangle
     Vector3 a;
     Vector3 b;
     Vector3 c;
+    Color color;
+};
+
+struct Chunk
+{
+    int x;
+    int y;
+    std::vector<Triangle> triangles;
 };
 
 class MapGenerator : public Module {
@@ -25,19 +33,18 @@ public:
     virtual void Cleanup() override;
     Vector3* GetVertices() { return vertices.data(); }
     int GetVerticesSize() { return vertices.size(); }
+    void GenerateChunk(int x_index, int y_index);
     void DrawMap();
-    Triangle GetTriangle(int index)
-    {
-        return Triangle{ vertices[index], vertices[index + 1], vertices[index + 2] };
-    }
-
+    
 private:
-    const int width = 30;
-    const int height = 30;
+    const int width = 200;
+    const int height = 200;
     const double depth = 0.5;
-
+    const float heightMultiplier = 65.0f;
 
     std::vector<Vector3> vertices;
+    std::vector<Triangle> triangles;
+    std::vector<Chunk> chunks;
     noise::module::Perlin perlin;
 };
 
