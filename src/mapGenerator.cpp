@@ -28,7 +28,8 @@ bool MapGenerator::LoadConfig(std::string config_file)
     persistence = j["perlinPersistence"].get<double>();
     depth = j["depth"].get<double>();
     heightMultiplier = j["heightScale"].get<float>();
-    seed = j["perlinSeed"].get<int>();
+    sizeOfTriangle = j["triangleSize"].get<float>();
+    seed = j["perlinSeed"].get<int>(); 
 
     return true;
 }
@@ -46,12 +47,12 @@ bool MapGenerator::Start()
     GenerateChunk(1, 0);
     GenerateChunk(0, 1);
     GenerateChunk(1, 1);
-    GenerateChunk(2, 0);
-    GenerateChunk(0, 2);
-    GenerateChunk(2, 1);
-    GenerateChunk(1, 2);
-    GenerateChunk(2, 2);
-    
+    //GenerateChunk(2, 0);
+    //GenerateChunk(0, 2);
+    //GenerateChunk(2, 1);
+    //GenerateChunk(1, 2);
+    //GenerateChunk(2, 2);
+
 
     return true;
 }
@@ -84,14 +85,14 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
         for (int j = 1; j <= height; ++j) 
         {
         // First triangle
-        vertices.push_back(Vector3{(float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), float(j + 1 + y)});
-        vertices.push_back(Vector3{float(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), (float)(j + y)});
-        vertices.push_back(Vector3{(float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + y), (double)depth), (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
     
         // Second triangle
-        vertices.push_back(Vector3{float(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), (float)(j + y)});
-        vertices.push_back(Vector3{(float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), float(j + 1 + y)});
-        vertices.push_back(Vector3{(float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + 1 + y), (double)depth), float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
         }
     }
 

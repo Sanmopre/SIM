@@ -40,7 +40,9 @@ private:
     int width = 200;
     int height = 200;
     double depth = 0.5;
+
     float heightMultiplier = 65.0f;
+    float sizeOfTriangle = 3.0f;
 
 
     //Perlin values
