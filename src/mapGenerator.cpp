@@ -1,5 +1,6 @@
 #include "mapGenerator.h"
 #include "engine.h"
+#include "render.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -44,9 +45,7 @@ bool MapGenerator::Start()
     perlin.SetNoiseQuality(noise::NoiseQuality::QUALITY_STD);
 
     GenerateChunk(0, 0);
-    GenerateChunk(1, 0);
-    GenerateChunk(0, 1);
-    GenerateChunk(1, 1);
+    //GenerateChunk(-1, -1);
     //GenerateChunk(2, 0);
     //GenerateChunk(0, 2);
     //GenerateChunk(2, 1);
@@ -57,8 +56,13 @@ bool MapGenerator::Start()
     return true;
 }
 
+void MapGenerator::UpdateChunksBasedOnCamera(Vector3 cameraPosition)
+{
+}
+
 bool MapGenerator::Update(double delta_time) 
 {
+    std::cout << "Camera X: " << engine->render->GetCamera()->position.x << "Chunk X: " << engine->render->GetCamera()->position.x / (width * sizeOfTriangle) << std::endl;
     return true;
 }
 

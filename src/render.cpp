@@ -56,7 +56,7 @@ bool Render::Update(double delta_time)
     
         BeginMode3D(camera);
         engine->mapGenerator->DrawMap();
-        DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 0.20f, 0.20f, 0.20f }, WHITE);
+        DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 1.0f, 1.0f, 1.0f }, WHITE);
         DrawGrid(10, 1.0f);
 
         EndMode3D();

@@ -34,6 +34,7 @@ public:
     Vector3* GetVertices() { return vertices.data(); }
     int GetVerticesSize() { return vertices.size(); }
     void GenerateChunk(int x_index, int y_index);
+    void UpdateChunksBasedOnCamera(Vector3 cameraPosition);
     void DrawMap();
     
 private:
@@ -51,6 +52,8 @@ private:
     double persistence = 0.5;
     int octaves = 4;
     int seed = 0;
+
+    int chunkThreshold = 2;
 
 
     std::vector<Vector3> vertices;

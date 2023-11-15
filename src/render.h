@@ -14,6 +14,7 @@ public:
     virtual bool Start() override;
     virtual bool Update(double delta_time) override;
     virtual void Cleanup() override;
+    Camera3D* GetCamera() { return &camera; }
 
 private:
     const int screenWidth = 1920;
