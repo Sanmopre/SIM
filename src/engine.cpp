@@ -21,7 +21,7 @@ bool Engine::LoadConfig(std::string config_file)
     
     for (auto mod : modules)
     {
-        if(!mod->LoadConfig(mod->name + "_config.xml"))
+        if(!mod->LoadConfig(CONFIG_PATH + "config.json"))
         {
             std::cout << "Module " << mod->name << " failed to load config." << "\n";
             return false;

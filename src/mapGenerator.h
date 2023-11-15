@@ -37,10 +37,19 @@ public:
     void DrawMap();
     
 private:
-    const int width = 200;
-    const int height = 200;
-    const double depth = 0.5;
-    const float heightMultiplier = 65.0f;
+    int width = 200;
+    int height = 200;
+    double depth = 0.5;
+    float heightMultiplier = 65.0f;
+
+
+    //Perlin values
+    double frequency = 0.1;
+    double lacunarity = 2.0;
+    double persistence = 0.5;
+    int octaves = 4;
+    int seed = 0;
+
 
     std::vector<Vector3> vertices;
     std::vector<Triangle> triangles;

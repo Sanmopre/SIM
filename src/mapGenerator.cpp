@@ -1,6 +1,8 @@
 #include "mapGenerator.h"
+#include "engine.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 
 MapGenerator::MapGenerator(std::string name) : Module(name) {
 }
@@ -11,23 +13,45 @@ MapGenerator::~MapGenerator() {
 
 bool MapGenerator::LoadConfig(std::string config_file) 
 {
+    std::ifstream file(config_file);
+    json j;
+    file >> j;
+
+    // Get elements as integers
+    height = j["chunkSize"].get<int>();
+    width = j["chunkSize"].get<int>();
+
+
+    octaves = j["perlinOctaves"].get<int>();
+    frequency = j["perlinFrequency"].get<double>();
+    lacunarity = j["perlinLacunarity"].get<double>();
+    persistence = j["perlinPersistence"].get<double>();
+    depth = j["depth"].get<double>();
+    heightMultiplier = j["heightScale"].get<float>();
+    seed = j["perlinSeed"].get<int>();
 
     return true;
 }
 
 bool MapGenerator::Start() 
 {   
-    perlin.SetOctaveCount(6);
-    perlin.SetFrequency(0.01);
-    perlin.SetPersistence(0.86);
-    perlin.SetLacunarity(0.14);
-    perlin.SetSeed(0);
+    perlin.SetOctaveCount(octaves);
+    perlin.SetFrequency(frequency);
+    perlin.SetPersistence(persistence);
+    perlin.SetLacunarity(lacunarity);
+    perlin.SetSeed(seed);
     perlin.SetNoiseQuality(noise::NoiseQuality::QUALITY_STD);
 
     GenerateChunk(0, 0);
     GenerateChunk(1, 0);
     GenerateChunk(0, 1);
     GenerateChunk(1, 1);
+    GenerateChunk(2, 0);
+    GenerateChunk(0, 2);
+    GenerateChunk(2, 1);
+    GenerateChunk(1, 2);
+    GenerateChunk(2, 2);
+    
 
     return true;
 }

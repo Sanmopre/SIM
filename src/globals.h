@@ -1,7 +1,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define CONFIG_PATH "config/"
+#include <string>
+
+#define CONFIG_PATH std::string("../config/")
 
 #include <chrono>
 

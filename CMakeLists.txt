@@ -13,7 +13,7 @@ endif()
 
 find_package(raylib CONFIG REQUIRED)
 find_package(unofficial-noise CONFIG REQUIRED)
-
+find_package(nlohmann_json CONFIG REQUIRED)
 
 
 # Add all .cpp files under the src folder
@@ -25,6 +25,8 @@ add_executable(MyExecutable ${SOURCES})
 target_link_libraries(MyExecutable PRIVATE raylib)
 if(WIN32)
     target_link_libraries(MyExecutable PRIVATE unofficial::noise::noise)
+    target_link_libraries(MyExecutable PRIVATE nlohmann_json::nlohmann_json)
 else()
     target_link_libraries(MyExecutable PRIVATE unofficial::noise::noise-static)
+    target_link_libraries(MyExecutable PRIVATE nlohmann_json::nlohmann_json)
 endif()

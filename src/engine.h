@@ -6,6 +6,9 @@
 #include "module.h"
 #include "render.h"
 #include "mapGenerator.h"
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 class Engine {
 public:
