@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/media/sanmopre/Nuevo vol/Repos/vcpkg/installed/x64-linux/include"
-                "D:Repos/vcpkg/installed/x64-windows/include"
+                "/media/sanmopre/Nuevo vol/Repos/vcpkg-good/installed/x64-linux/include"
+                "D:Repos/vcpkg-good/installed/x64-windows/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

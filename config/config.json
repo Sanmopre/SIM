@@ -1,11 +1,12 @@
 {
-    "chunkSize": 26,
+    "chunkSize": 16,
     "perlinOctaves": 8,
     "perlinFrequency": 0.03,
     "perlinPersistence": 0.55,
     "perlinLacunarity": 0.55,
     "perlinSeed": 0,
     "heightScale": 46.0,
-    "triangleSize": 15.0,
-    "depth": 0.5
+    "triangleSize": 4.0,
+    "depth": 0.5,
+    "chunkThreshold": 8
 }

@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 project(MyProject)
 
 if(WIN32)
-    set(CMAKE_PREFIX_PATH "D:/Repos/vcpkg/installed/x64-windows")
+    set(CMAKE_PREFIX_PATH "D:/Repos/vcpkg-good/installed/x64-windows")
 else()
-    set(CMAKE_PREFIX_PATH "/media/sanmopre/Nuevo vol/Repos/vcpkg/installed/x64-linux")
+    set(CMAKE_PREFIX_PATH "/media/sanmopre/Nuevo vol/Repos/vcpkg-good/installed/x64-linux")
 endif()
 
 

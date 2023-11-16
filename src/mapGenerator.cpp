@@ -31,6 +31,7 @@ bool MapGenerator::LoadConfig(std::string config_file)
     heightMultiplier = j["heightScale"].get<float>();
     sizeOfTriangle = j["triangleSize"].get<float>();
     seed = j["perlinSeed"].get<int>(); 
+    chunkThreshold = j["chunkThreshold"].get<int>();
 
     return true;
 }
@@ -44,25 +45,55 @@ bool MapGenerator::Start()
     perlin.SetSeed(seed);
     perlin.SetNoiseQuality(noise::NoiseQuality::QUALITY_STD);
 
-    GenerateChunk(0, 0);
-    //GenerateChunk(-1, -1);
-    //GenerateChunk(2, 0);
-    //GenerateChunk(0, 2);
-    //GenerateChunk(2, 1);
-    //GenerateChunk(1, 2);
-    //GenerateChunk(2, 2);
-
-
     return true;
 }
 
 void MapGenerator::UpdateChunksBasedOnCamera(Vector3 cameraPosition)
 {
+        int x = (int)(cameraPosition.x / (width * sizeOfTriangle));
+        int y = (int)(cameraPosition.z / (height * sizeOfTriangle));
+
+        if(x == savedX && y == savedY)
+            return;
+
+        std::cout << "x: " << x << " y: " << y << std::endl;
+
+        for(int i = x - chunkThreshold; i <= x + chunkThreshold; ++i)
+        {
+            for(int j = y - chunkThreshold; j <= y + chunkThreshold; ++j)
+            {
+                bool chunkFound = false;
+                for(auto chunk : chunks)
+                {
+                    if(chunk.x == i && chunk.y == j)
+                    {
+                        chunkFound = true;
+                        break;
+                    }
+                }
+
+                if(!chunkFound)
+                {
+                    GenerateChunk(i, j);
+                }
+            }
+        }
+
+        for(int p = 0; p < chunks.size(); p++)
+        {
+            if(chunks[p].x < x - chunkThreshold || chunks[p].x > x + chunkThreshold || chunks[p].y < y - chunkThreshold || chunks[p].y > y + chunkThreshold)
+            {
+                chunks.erase(chunks.begin() + p);
+            }
+
+        }
 }
 
 bool MapGenerator::Update(double delta_time) 
 {
-    std::cout << "Camera X: " << engine->render->GetCamera()->position.x << "Chunk X: " << engine->render->GetCamera()->position.x / (width * sizeOfTriangle) << std::endl;
+    UpdateChunksBasedOnCamera(engine->render->GetCamera()->position);
+    savedX = (int)(engine->render->GetCamera()->position.x / (width * sizeOfTriangle));
+    savedY = (int)(engine->render->GetCamera()->position.z / (height * sizeOfTriangle));
     return true;
 }
 
@@ -76,6 +107,8 @@ void MapGenerator::DrawMap()
     for(int j = 0; j < chunks.size(); ++j)
         for (int i = 0; i < chunks[j].triangles.size(); ++i)
             DrawTriangle3D(chunks[j].triangles[i].a, chunks[j].triangles[i].b, chunks[j].triangles[i].c, chunks[j].triangles[i].color);
+
+    DrawPlane(Vector3{0.0f, 2.0f, 0.0f}, Vector2{1000.0f, 1000.0f}, Color{0, 255, 0, 255});
 }
 
 void MapGenerator::GenerateChunk(int x_index, int y_index)
@@ -115,7 +148,7 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
         triangle.a = vertices[i];
         triangle.b = vertices[i + 1];
         triangle.c = vertices[i + 2];
-
+        
         unsigned char red = std::clamp(255 - static_cast<int>(averageHeight * 250.0f), 0, 255);
         unsigned char green = std::clamp(static_cast<int>(averageHeight * 250.0f), 0, 255);
         triangle.color = Color{red, green, 255, 255};
@@ -124,7 +157,7 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
     
     }
 
-    chunks.push_back(Chunk{x, y, trianglesChunk});
+    chunks.push_back(Chunk{x_index, y_index, trianglesChunk});
 
     vertices.clear();
 }

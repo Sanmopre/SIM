@@ -53,8 +53,11 @@ private:
     int octaves = 4;
     int seed = 0;
 
-    int chunkThreshold = 2;
+    int chunkThreshold = 8;
 
+    //Random values to make sure the map is generated correctly at the start
+    int savedX = 3129;
+    int savedY = 8954;
 
     std::vector<Vector3> vertices;
     std::vector<Triangle> triangles;
