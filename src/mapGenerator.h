@@ -5,6 +5,7 @@
 #include "module.h"
 #include "raylib.h"
 #include "noise/noise.h"
+#include "thridParty/FastNoiseLite.h"
 #include <vector>
 
 
@@ -18,9 +19,11 @@ struct Triangle
 
 struct Chunk
 {
+
     int x;
     int y;
     std::vector<Triangle> triangles;
+    std::vector<Vector3> treesPositions;
 };
 
 class MapGenerator : public Module {
@@ -45,6 +48,7 @@ private:
     float heightMultiplier = 65.0f;
     float sizeOfTriangle = 3.0f;
     float bottomOfMap = 1.0f;
+    int oceanColorVariation = 5;
 
 
     //Perlin values
@@ -60,10 +64,17 @@ private:
     int savedX = 3129;
     int savedY = 8954;
 
+
+    FastNoiseLite m_noise;
+
     std::vector<Vector3> vertices;
     std::vector<Triangle> triangles;
     std::vector<Chunk> chunks;
     noise::module::Perlin perlin;
+
+
+    Model treeModel;
+    int treeDensity = 5;
 };
 
 #endif // MAPGENERATOR_H

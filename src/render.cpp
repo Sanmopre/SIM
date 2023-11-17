@@ -17,7 +17,7 @@ bool Render::LoadConfig(std::string config_file)
 bool Render::Start() 
 {
 // create a simple 3d camera that moves with the arrow keys and rotates with the mouse
-camera.position = Vector3{ 0.0f, 10.0f, 10.0f };  // Camera position
+camera.position = Vector3{ 0.0f, 20.0f, 1.0f };  // Camera position
 camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
 camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
 camera.fovy = 45.0f;                                // Camera field-of-view Y
@@ -28,9 +28,6 @@ camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
     SetTargetFPS(targetFPS);
-
-    model = LoadModel("../models/sirtap.obj");        
-    
     return true;
 }
 
@@ -54,7 +51,6 @@ bool Render::Update(double delta_time)
     
         BeginMode3D(camera);
         engine->mapGenerator->DrawMap();
-        //DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 1.0f, 1.0f, 1.0f }, WHITE);
         EndMode3D();
     EndDrawing();
 
