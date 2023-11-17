@@ -30,9 +30,7 @@ camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     SetTargetFPS(targetFPS);
 
     model = LoadModel("../models/sirtap.obj");        
-
-    SetMaterialTexture(&model.materials[0], MATERIAL_MAP_DIFFUSE, texture); 
-
+    
     return true;
 }
 
@@ -56,9 +54,7 @@ bool Render::Update(double delta_time)
     
         BeginMode3D(camera);
         engine->mapGenerator->DrawMap();
-        DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 1.0f, 1.0f, 1.0f }, WHITE);
-        DrawGrid(10, 1.0f);
-
+        //DrawModelEx(model, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, 0.0f, Vector3{ 1.0f, 1.0f, 1.0f }, WHITE);
         EndMode3D();
     EndDrawing();
 

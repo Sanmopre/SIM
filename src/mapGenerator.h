@@ -44,6 +44,7 @@ private:
 
     float heightMultiplier = 65.0f;
     float sizeOfTriangle = 3.0f;
+    float bottomOfMap = 1.0f;
 
 
     //Perlin values

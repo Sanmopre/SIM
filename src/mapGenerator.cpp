@@ -32,6 +32,7 @@ bool MapGenerator::LoadConfig(std::string config_file)
     sizeOfTriangle = j["triangleSize"].get<float>();
     seed = j["perlinSeed"].get<int>(); 
     chunkThreshold = j["chunkThreshold"].get<int>();
+    bottomOfMap = j["bottomOfMap"].get<float>();
 
     return true;
 }
@@ -107,8 +108,6 @@ void MapGenerator::DrawMap()
     for(int j = 0; j < chunks.size(); ++j)
         for (int i = 0; i < chunks[j].triangles.size(); ++i)
             DrawTriangle3D(chunks[j].triangles[i].a, chunks[j].triangles[i].b, chunks[j].triangles[i].c, chunks[j].triangles[i].color);
-
-    DrawPlane(Vector3{0.0f, 2.0f, 0.0f}, Vector2{1000.0f, 1000.0f}, Color{0, 255, 0, 255});
 }
 
 void MapGenerator::GenerateChunk(int x_index, int y_index)
@@ -121,15 +120,42 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
     for (int i = 1; i <= width; ++i) {
         for (int j = 1; j <= height; ++j) 
         {
+        
+        float y_1_1 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth);
+        if(y_1_1 < bottomOfMap)
+            y_1_1 = bottomOfMap;
+
+        float y_1_2 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth);
+        if(y_1_2 < bottomOfMap)
+            y_1_2 = bottomOfMap;
+
+        float y_1_3 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + y), (double)depth);
+        if(y_1_3 < bottomOfMap)
+            y_1_3 = bottomOfMap;
+
+        float y_2_1 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth);
+        if(y_2_1 < bottomOfMap)
+            y_2_1 = bottomOfMap;
+
+        float y_2_2 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth);
+        if(y_2_2 < bottomOfMap)
+            y_2_2 = bottomOfMap;
+
+        float y_2_3 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + 1 + y), (double)depth);
+        if(y_2_3 < bottomOfMap)
+            y_2_3 = bottomOfMap;
+
+        
+
         // First triangle
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), y_1_1, sizeOfTriangle * float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), y_1_2, sizeOfTriangle * (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), y_1_3, sizeOfTriangle * (float)(j + y)});
     
         // Second triangle
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth), sizeOfTriangle * (float)(j + y)});
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
-        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + 1 + y), (double)depth), sizeOfTriangle * float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), y_2_1, sizeOfTriangle * (float)(j + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), y_2_2, sizeOfTriangle * float(j + 1 + y)});
+        vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), y_2_3, sizeOfTriangle * float(j + 1 + y)});
         }
     }
 
@@ -137,23 +163,37 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
     std::vector<Triangle> trianglesChunk;
     for (int i = 0; i < vertices.size(); i += 3) 
     {
-        float averageHeight = (((vertices[i].y/heightMultiplier + vertices[i + 1].y/heightMultiplier + vertices[i + 2].y/heightMultiplier) / 3.0f) + 1.0f) /2.0f;
+        if(vertices[i].y == bottomOfMap && vertices[i + 1].y == bottomOfMap && vertices[i + 2].y == bottomOfMap)
+        {
+            Triangle triangle;
+            triangle.a = vertices[i];
+            triangle.b = vertices[i + 1];
+            triangle.c = vertices[i + 2];
+            triangle.color = Color{0, 102, 204, 255};
 
-        if(averageHeight > 1.0f)
-            averageHeight = 1.0f;
-        else if(averageHeight < 0.0f)
-            averageHeight = 0.0f;
+            trianglesChunk.push_back(triangle);
+        }
+        else
+        {
+            float averageHeight = (((vertices[i].y/heightMultiplier + vertices[i + 1].y/heightMultiplier + vertices[i + 2].y/heightMultiplier) / 3.0f) + 1.0f) /2.0f;
 
-        Triangle triangle;
-        triangle.a = vertices[i];
-        triangle.b = vertices[i + 1];
-        triangle.c = vertices[i + 2];
+            if(averageHeight > 1.0f)
+                averageHeight = 1.0f;
+            else if(averageHeight < 0.0f)
+                averageHeight = 0.0f;
+
+            Triangle triangle;
+            triangle.a = vertices[i];
+            triangle.b = vertices[i + 1];
+            triangle.c = vertices[i + 2];
         
-        unsigned char red = std::clamp(255 - static_cast<int>(averageHeight * 250.0f), 0, 255);
-        unsigned char green = std::clamp(static_cast<int>(averageHeight * 250.0f), 0, 255);
-        triangle.color = Color{red, green, 255, 255};
 
-        trianglesChunk.push_back(triangle);
+            unsigned char red = std::clamp(255 - static_cast<int>(averageHeight * 250.0f), 0, 255);
+            unsigned char green = std::clamp(static_cast<int>(averageHeight * 250.0f), 0, 255);
+            triangle.color = Color{red, green, 0, 255};
+
+            trianglesChunk.push_back(triangle);
+        }
     
     }
 
