@@ -17,13 +17,12 @@ bool Render::LoadConfig(std::string config_file)
 bool Render::Start() 
 {
 // create a simple 3d camera that moves with the arrow keys and rotates with the mouse
-camera.position = Vector3{ 0.0f, 20.0f, 1.0f };  // Camera position
+camera.position = Vector3{ 0.0f, 200.0f, 1.0f };  // Camera position
 camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
 camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
 camera.fovy = 45.0f;                                // Camera field-of-view Y
 camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
-    
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
@@ -50,6 +49,7 @@ bool Render::Update(double delta_time)
     ClearBackground(RAYWHITE);
     
         BeginMode3D(camera);
+            DrawModel(model, Vector3{ 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
         engine->mapGenerator->DrawMap();
         EndMode3D();
     EndDrawing();

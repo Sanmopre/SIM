@@ -36,7 +36,7 @@ bool MapGenerator::LoadConfig(std::string config_file)
     chunkThreshold = j["chunkThreshold"].get<int>();
     bottomOfMap = j["bottomOfMap"].get<float>();
 
-    //treeModel = LoadModel("../models/lowpoyltree.obj");    
+    //treeModel = LoadModel(j["treeModel"].get<std::string>().c_str());
 
     treeDensity = j["treeDensity"].get<int>();
 
@@ -126,8 +126,7 @@ void MapGenerator::DrawMap()
 
         for (int i = 0; i < chunks[j].treesPositions.size(); ++i)
         {
-            //DrawModel(treeModel, chunks[j].treesPositions[i], 1.0f, WHITE);
-            DrawCube(chunks[j].treesPositions[i], 1, 1, 3, Color{ 0, 104, 0, 255 });
+            DrawTree(chunks[j].treesPositions[i]);
         } 
     }
 
@@ -253,9 +252,8 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
             //Trees
             std::random_device rd; // obtain a random number from hardware
             std::mt19937 gen(rd()); // seed the generator
-            std::uniform_int_distribution<> distr(0, 100); // define the range
-            std::cout << distr(gen) << std::endl;
-            if(distr(gen) < 1)
+            std::uniform_int_distribution<> distr(0, 1000); // define the range
+            if(distr(gen) < treeDensity)
             {
                 Vector3 treePosition;
                 treePosition.x = (vertices[i].x + vertices[i + 1].x + vertices[i + 2].x) / 3.0f;
@@ -270,6 +268,36 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
     chunks.push_back(Chunk{x_index, y_index, trianglesChunk, treesPositions});
 
     vertices.clear();
+}
+
+void MapGenerator::DrawTree(Vector3 position, int treeType)
+{
+    switch (treeType)
+    {
+    case 1:
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.5f, position.z + 0.0f}, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.8f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        break;
+    case 2:
+        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        break;
+    case 3:
+        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        break;
+    case 4:
+        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        break;
+    case 5:
+        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        break;
+    default:
+        break;
+    }
+
 }
 
 

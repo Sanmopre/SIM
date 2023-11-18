@@ -1,15 +1,15 @@
 {
     "chunkSize": 20,
     "perlinOctaves": 8,
-    "perlinFrequency": 0.25,
-    "perlinPersistence": 2.5,
+    "perlinFrequency": 1.25,
+    "perlinPersistence": 3.5,
     "perlinLacunarity": 0.5,
     "perlinSeed": 0,
-    "heightScale": 97.0,
+    "heightScale": 30.0,
     "triangleSize": 1.0,
     "depth": 0.5,
-    "bottomOfMap": 2.0,
+    "bottomOfMap": 0.5,
     "chunkThreshold": 8,
-    "treeModel": "../models/lowpoyltree.obj",
+    "treeModel": "../models/lowpolytree/Models and Textures/lowpoyltree.obj",
     "treeDensity": 5
 }

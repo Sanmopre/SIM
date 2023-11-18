@@ -39,6 +39,7 @@ public:
     void GenerateChunk(int x_index, int y_index);
     void UpdateChunksBasedOnCamera(Vector3 cameraPosition);
     void DrawMap();
+    void DrawTree(Vector3 position, int treeType = 1);
     
 private:
     int width = 200;
