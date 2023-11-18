@@ -126,7 +126,7 @@ void MapGenerator::DrawMap()
 
         for (int i = 0; i < chunks[j].treesPositions.size(); ++i)
         {
-            DrawTree(chunks[j].treesPositions[i]);
+            DrawTree(chunks[j].treesPositions[i], 5);
         } 
     }
 
@@ -279,20 +279,20 @@ void MapGenerator::DrawTree(Vector3 position, int treeType)
         DrawCube(Vector3{position .x + 0.0f, position.y + 0.8f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
         break;
     case 2:
-        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
-        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.75f, position.z + 0.0f}, 0.25, 1.5, 0.25,Color{ 100, 52, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.15f, position.z + 0.0f}, 0.5f, 0.8, 0.5f, Color{ 0, 100, 0, 255 });
         break;
     case 3:
-        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
-        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.6f, position.z + 0.0f}, 0.25, 1.2, 0.25,Color{ 100, 52, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.9f, position.z + 0.0f}, 0.5f, 0.9, 0.6f, Color{ 0, 108, 0, 255 });
         break;
     case 4:
-        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
-        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.4f, position.z + 0.0f}, 0.25, 0.8, 0.25,Color{ 106, 54, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.7f, position.z + 0.0f}, 1.2f, 0.3, 1.0f, Color{ 0, 110, 0, 255 });
         break;
     case 5:
-        DrawCube(position, 0.25, 1, 0.25,Color{ 102, 51, 0, 255 } );
-        DrawCube(Vector3{position .x + 0.0f, position.y + 1.0f, position.z + 0.0f}, 1.0f, 0.6, 1.0f, Color{ 0, 104, 0, 255 });
+        DrawCube(Vector3{position .x + 0.0f, position.y + 0.4f, position.z + 0.0f}, 0.25, 0.8, 0.25,Color{ 101, 50, 0, 255 } );
+        DrawCube(Vector3{position .x + 0.0f, position.y + 1.1f, position.z + 0.0f}, 0.6f, 0.6, 0.6f, Color{ 0, 100, 0, 255 });
         break;
     default:
         break;
