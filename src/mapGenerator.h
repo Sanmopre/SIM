@@ -17,17 +17,24 @@ struct Triangle
     Color color;
 };
 
+struct Tree
+{
+    Vector3 position;
+    int type;
+};
+
 struct Chunk
 {
 
     int x;
     int y;
     std::vector<Triangle> triangles;
-    std::vector<Vector3> treesPositions;
+    std::vector<Tree> trees;
 };
 
 class MapGenerator : public Module {
 public:
+
     MapGenerator(std::string name);
     virtual ~MapGenerator();
     virtual bool LoadConfig(std::string config_file) override;
@@ -40,15 +47,19 @@ public:
     void UpdateChunksBasedOnCamera(Vector3 cameraPosition);
     void DrawMap();
     void DrawTree(Vector3 position, int treeType = 1);
+    void CreateCloudRectangle(Vector3 position, float width, float height, float depth);
     
 private:
+
+    int GenerateRandomNumber(int min, int max);
+
     int width = 200;
     int height = 200;
     double depth = 0.5;
 
     float heightMultiplier = 65.0f;
     float sizeOfTriangle = 3.0f;
-    float bottomOfMap = 1.0f;
+    
     int oceanColorVariation = 5;
 
 
@@ -76,6 +87,10 @@ private:
 
     Model treeModel;
     int treeDensity = 5;
+    
+    float bottomOfMap = 1.0f;
+    float sandLevel = 1.5f;
+    Color sandColor = { 255, 229, 204, 255 };
 };
 
 #endif // MAPGENERATOR_H

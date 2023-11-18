@@ -8,6 +8,7 @@
 #include <ctime>
 #include <random>
 
+
 MapGenerator::MapGenerator(std::string name) : Module(name) {
 }
 
@@ -35,6 +36,7 @@ bool MapGenerator::LoadConfig(std::string config_file)
     seed = j["perlinSeed"].get<int>(); 
     chunkThreshold = j["chunkThreshold"].get<int>();
     bottomOfMap = j["bottomOfMap"].get<float>();
+    sandLevel = j["sandLevel"].get<float>();
 
     //treeModel = LoadModel(j["treeModel"].get<std::string>().c_str());
 
@@ -59,6 +61,7 @@ bool MapGenerator::Start()
     m_noise.SetFractalGain(persistence);
     m_noise.SetFrequency(frequency);
     m_noise.SetSeed(seed);
+
 
     return true;
 }
@@ -124,12 +127,14 @@ void MapGenerator::DrawMap()
             DrawTriangle3D(chunks[j].triangles[i].a, chunks[j].triangles[i].b, chunks[j].triangles[i].c, chunks[j].triangles[i].color);
         }
 
-        for (int i = 0; i < chunks[j].treesPositions.size(); ++i)
+        for (int i = 0; i < chunks[j].trees.size(); ++i)
         {
-            DrawTree(chunks[j].treesPositions[i], 5);
+            DrawTree(chunks[j].trees[i].position, chunks[j].trees[i].type);
         } 
     }
 
+    //Draw cloud
+    CreateCloudRectangle(Vector3{0.0f, 50.0f, 0.0f}, 100.0f, 10.0f, 30.0f);
 }
 
 void MapGenerator::GenerateChunk(int x_index, int y_index)
@@ -167,35 +172,8 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
         float y_2_3 = heightMultiplier *(float)m_noise.GetNoise((double)(i + 1 + x), (double)(j + 1 + y), (double)depth);
         if(y_2_3 < bottomOfMap)
             y_2_3 = bottomOfMap;
-            
-
-        /*
-        float y_1_1 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth);
-        if(y_1_1 < bottomOfMap)
-            y_1_1 = bottomOfMap;
-
-        float y_1_2 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth);
-        if(y_1_2 < bottomOfMap)
-            y_1_2 = bottomOfMap;
-
-        float y_1_3 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + y), (double)depth);
-        if(y_1_3 < bottomOfMap)
-            y_1_3 = bottomOfMap;
-
-        float y_2_1 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + y), (double)depth);
-        if(y_2_1 < bottomOfMap)
-            y_2_1 = bottomOfMap;
-
-        float y_2_2 = heightMultiplier *(float)perlin.GetValue((double)(i + x), (double)(j + 1 + y), (double)depth);
-        if(y_2_2 < bottomOfMap)
-            y_2_2 = bottomOfMap;
-
-        float y_2_3 = heightMultiplier *(float)perlin.GetValue((double)(i + 1 + x), (double)(j + 1 + y), (double)depth);
-        if(y_2_3 < bottomOfMap)
-            y_2_3 = bottomOfMap;
-        */
         
-
+    
         // First triangle
         vertices.push_back(Vector3{sizeOfTriangle * (float)(i + x), y_1_1, sizeOfTriangle * float(j + 1 + y)});
         vertices.push_back(Vector3{sizeOfTriangle * (float)(i + 1 + x), y_1_2, sizeOfTriangle * (float)(j + y)});
@@ -210,7 +188,7 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
 
 
     std::vector<Triangle> trianglesChunk;
-    std::vector<Vector3> treesPositions;
+    std::vector<Tree> trees;
     for (int i = 0; i < vertices.size(); i += 3) 
     {
         if(vertices[i].y == bottomOfMap && vertices[i + 1].y == bottomOfMap && vertices[i + 2].y == bottomOfMap)
@@ -241,31 +219,41 @@ void MapGenerator::GenerateChunk(int x_index, int y_index)
             triangle.b = vertices[i + 1];
             triangle.c = vertices[i + 2];
         
+            
+            if(averageHeight < sandLevel)
+            {
+                //Sand
+                int randomSign = rand() % 2 == 0 ? -1 : 1;
+                triangle.color = Color{255, static_cast<unsigned char>(229 + static_cast<int>(2 * randomSign)), 204, 255};
+            }
+            else
+            {
+                //Grass
+                unsigned char red = std::clamp(255 - static_cast<int>(averageHeight * 250.0f), 0, 255);
+                unsigned char green = std::clamp(static_cast<int>(averageHeight * 250.0f), 0, 255);
+                triangle.color = Color{red, green, 0, 255};
 
-            unsigned char red = std::clamp(255 - static_cast<int>(averageHeight * 250.0f), 0, 255);
-            unsigned char green = std::clamp(static_cast<int>(averageHeight * 250.0f), 0, 255);
-            triangle.color = Color{red, green, 0, 255};
+                if(GenerateRandomNumber(0,1000) < treeDensity)
+                {
+                    Tree tree;
+                    Vector3 treePosition;
+                    treePosition.x = (vertices[i].x + vertices[i + 1].x + vertices[i + 2].x) / 3.0f;
+                    treePosition.y = (vertices[i].y + vertices[i + 1].y + vertices[i + 2].y) / 3.0f;
+                    treePosition.z = (vertices[i].z + vertices[i + 1].z + vertices[i + 2].z) / 3.0f;
+                    tree.position = treePosition;
+
+                    tree.type = GenerateRandomNumber(1,5);
+                    trees.push_back(tree);
+                }
+            }
 
             trianglesChunk.push_back(triangle);
 
-
-            //Trees
-            std::random_device rd; // obtain a random number from hardware
-            std::mt19937 gen(rd()); // seed the generator
-            std::uniform_int_distribution<> distr(0, 1000); // define the range
-            if(distr(gen) < treeDensity)
-            {
-                Vector3 treePosition;
-                treePosition.x = (vertices[i].x + vertices[i + 1].x + vertices[i + 2].x) / 3.0f;
-                treePosition.y = (vertices[i].y + vertices[i + 1].y + vertices[i + 2].y) / 3.0f;
-                treePosition.z = (vertices[i].z + vertices[i + 1].z + vertices[i + 2].z) / 3.0f;
-                treesPositions.push_back(treePosition);
-            }
         }
     
     }
 
-    chunks.push_back(Chunk{x_index, y_index, trianglesChunk, treesPositions});
+    chunks.push_back(Chunk{x_index, y_index, trianglesChunk, trees});
 
     vertices.clear();
 }
@@ -301,3 +289,32 @@ void MapGenerator::DrawTree(Vector3 position, int treeType)
 }
 
 
+void MapGenerator::CreateCloudRectangle(Vector3 position, float width, float height, float depth)
+{
+    // Draw the front side of the cube
+    DrawCube(Vector3{position.x, position.y, position.z + depth / 2.0f}, width, height, 0.01f, Color{255, 255, 255, 120});
+
+    // Draw the back side of the cube
+    DrawCube(Vector3{position.x, position.y, position.z - depth / 2.0f}, width, height, 0.01f, Color{255, 255, 255, 120});
+
+    // Draw the top side of the cube
+    DrawCube(Vector3{position.x, position.y + height / 2.0f, position.z}, width, 0.01f, depth, Color{255, 255, 255, 120});
+
+    // Draw the bottom side of the cube
+    DrawCube(Vector3{position.x, position.y - height / 2.0f, position.z}, width, 0.01f, depth, Color{255, 255, 255, 120});
+
+    // Draw the left side of the cube
+    DrawCube(Vector3{position.x - width / 2.0f, position.y, position.z}, 0.01f, height, depth, Color{255, 255, 255, 120});
+
+    // Draw the right side of the cube
+    DrawCube(Vector3{position.x + width / 2.0f, position.y, position.z}, 0.01f, height, depth, Color{255, 255, 255, 120});
+}
+
+int MapGenerator::GenerateRandomNumber(int min, int max)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
+
+    return dis(gen);
+}

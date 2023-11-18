@@ -6,8 +6,10 @@ Engine::Engine()
 {
     render = new Render("render");
     mapGenerator = new MapGenerator("mapGenerator");
+    ui = new UI("ui");
 
     modules.push_back(mapGenerator);
+    modules.push_back(ui);
     modules.push_back(render);
 }
 

@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 #include "module.h"
+#include "globals.h"
 #include "render.h"
+#include "ui.h"
 #include "mapGenerator.h"
 #include "nlohmann/json.hpp"
 
@@ -21,6 +23,7 @@ public:
 
     Render* render = nullptr;
     MapGenerator* mapGenerator = nullptr;
+    UI* ui = nullptr;
 
 
 

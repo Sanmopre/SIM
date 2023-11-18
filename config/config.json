@@ -4,12 +4,13 @@
     "perlinFrequency": 1.25,
     "perlinPersistence": 3.5,
     "perlinLacunarity": 0.5,
-    "perlinSeed": 0,
+    "perlinSeed": 34,
     "heightScale": 30.0,
     "triangleSize": 1.0,
     "depth": 0.5,
     "bottomOfMap": 0.5,
     "chunkThreshold": 8,
     "treeModel": "../models/lowpolytree/Models and Textures/lowpoyltree.obj",
-    "treeDensity": 5
+    "treeDensity": 20,
+    "sandLevel": 0.53
 }
