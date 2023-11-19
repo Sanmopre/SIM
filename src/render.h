@@ -14,20 +14,16 @@ public:
     virtual bool Update(double delta_time) override;
     virtual void Cleanup() override;
     Camera3D* GetCamera() { return &camera; }
-
+    bool IsPointInViewFrustum(Vector3 cameraPosition, Vector3 cameraTarget, Vector3 cameraUp, float fov, Vector3 point);
 private:
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
-    const int targetFPS = 144;
-    const float rotationSpeed = 30.0f;
-    const float speed = 10.0f;
-    std::string windowTitle = "SIM";
 
-    
+    int screenWidth = 1920;
+    int screenHeight = 1080;
+    int targetFPS = 30;
+    std::string windowTitle;
+
     Model model;                 
     Camera3D camera;
-
-    Vector2 angle = { 0.0f, 0.0f };
 };
 
 #endif // RENDER_H

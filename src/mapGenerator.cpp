@@ -90,7 +90,7 @@ void MapGenerator::UpdateChunksBasedOnCamera(Vector3 cameraPosition)
 
                 if(!chunkFound)
                 {
-                    GenerateChunk(i, j);
+                    GenerateChunk(i, j, 1);
                 }
             }
         }
@@ -124,7 +124,8 @@ void MapGenerator::DrawMap()
     {
         for (int i = 0; i < chunks[j].triangles.size(); ++i)
         {
-            DrawTriangle3D(chunks[j].triangles[i].a, chunks[j].triangles[i].b, chunks[j].triangles[i].c, chunks[j].triangles[i].color);
+            //if(engine->render->IsPointInViewFrustum(engine->render->GetCamera()->position, engine->render->GetCamera()->target, engine->render->GetCamera()->up, engine->render->GetCamera()->fovy, chunks[j].triangles[i].a))
+                DrawTriangle3D(chunks[j].triangles[i].a, chunks[j].triangles[i].b, chunks[j].triangles[i].c, chunks[j].triangles[i].color);
         }
 
         for (int i = 0; i < chunks[j].trees.size(); ++i)
@@ -137,15 +138,15 @@ void MapGenerator::DrawMap()
     CreateCloudRectangle(Vector3{0.0f, 50.0f, 0.0f}, 100.0f, 10.0f, 30.0f);
 }
 
-void MapGenerator::GenerateChunk(int x_index, int y_index)
+void MapGenerator::GenerateChunk(int x_index, int y_index, int lod)
 {
 
     int x = x_index * width;
     int y = y_index * height;
 
     vertices.clear();
-    for (int i = 1; i <= width; ++i) {
-        for (int j = 1; j <= height; ++j) 
+    for (int i = 1; i <= width; i = i + lod) {
+        for (int j = 1; j <= height; j = j + lod) 
         {
 
 

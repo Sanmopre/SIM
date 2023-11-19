@@ -8,6 +8,7 @@
 #include "render.h"
 #include "ui.h"
 #include "mapGenerator.h"
+#include "physics.h"
 #include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
@@ -24,6 +25,7 @@ public:
     Render* render = nullptr;
     MapGenerator* mapGenerator = nullptr;
     UI* ui = nullptr;
+    Physics* physics = nullptr;
 
 
 

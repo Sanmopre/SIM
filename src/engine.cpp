@@ -7,7 +7,9 @@ Engine::Engine()
     render = new Render("render");
     mapGenerator = new MapGenerator("mapGenerator");
     ui = new UI("ui");
+    physics = new Physics("physics");
 
+    modules.push_back(physics);
     modules.push_back(mapGenerator);
     modules.push_back(ui);
     modules.push_back(render);

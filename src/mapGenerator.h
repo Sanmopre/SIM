@@ -25,11 +25,11 @@ struct Tree
 
 struct Chunk
 {
-
     int x;
     int y;
     std::vector<Triangle> triangles;
     std::vector<Tree> trees;
+    int lod;
 };
 
 class MapGenerator : public Module {
@@ -43,7 +43,7 @@ public:
     virtual void Cleanup() override;
     Vector3* GetVertices() { return vertices.data(); }
     int GetVerticesSize() { return vertices.size(); }
-    void GenerateChunk(int x_index, int y_index);
+    void GenerateChunk(int x_index, int y_index, int lod = 1);
     void UpdateChunksBasedOnCamera(Vector3 cameraPosition);
     void DrawMap();
     void DrawTree(Vector3 position, int treeType = 1);

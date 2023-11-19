@@ -1,5 +1,5 @@
 {
-    "chunkSize": 20,
+    "chunkSize": 16,
     "perlinOctaves": 8,
     "perlinFrequency": 1.25,
     "perlinPersistence": 3.5,
@@ -8,9 +8,13 @@
     "heightScale": 30.0,
     "triangleSize": 1.0,
     "depth": 0.5,
-    "bottomOfMap": 0.5,
-    "chunkThreshold": 8,
+    "bottomOfMap": -0.5,
+    "chunkThreshold": 10,
     "treeModel": "../models/lowpolytree/Models and Textures/lowpoyltree.obj",
     "treeDensity": 20,
-    "sandLevel": 0.53
+    "sandLevel": 0.53,
+    "windowWidth": 1600,
+    "windowHeight": 900,
+    "targetFPS": 60,
+    "windowTitle": "Flight Simulator Engine"
 }
