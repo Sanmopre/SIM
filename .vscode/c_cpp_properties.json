@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/media/sanmopre/Nuevo vol/Repos/vcpkg-good/installed/x64-linux/include"
+                "/home/sanmopre/vcpkg/installed/x64-linux/include",
                 "D:Repos/vcpkg-good/installed/x64-windows/include"
             ],
             "defines": [],

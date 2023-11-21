@@ -3,6 +3,7 @@
 
 #include "module.h"
 #include "raylib.h"
+#include "raygui.h"
 #include <string>
 
 class UI : public Module {

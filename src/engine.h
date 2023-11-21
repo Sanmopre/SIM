@@ -6,8 +6,6 @@
 #include "module.h"
 #include "globals.h"
 #include "render.h"
-#include "ui.h"
-#include "mapGenerator.h"
 #include "physics.h"
 #include "nlohmann/json.hpp"
 
@@ -23,8 +21,8 @@ public:
     void Cleanup();
 
     Render* render = nullptr;
-    MapGenerator* mapGenerator = nullptr;
-    UI* ui = nullptr;
+    //MapGenerator* mapGenerator = nullptr;
+    //UI* ui = nullptr;
     Physics* physics = nullptr;
 
 

@@ -35,6 +35,7 @@ void UI::Cleanup()
 
 void UI::DrawUi()
 {
+    //if (GuiButton(Rectangle{100, 100, 100, 100}, "#05#Open Image")) { /* ACTION */ }
     DrawTextEx(font, text.c_str(), position, fontSize, spacing, BLACK);
     DrawTextEx(font, cameraString.c_str(), {position.x, position.y + verticalSpacing + fontSize}, fontSize, 1, BLACK);
 }

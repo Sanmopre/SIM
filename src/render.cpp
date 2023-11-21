@@ -1,6 +1,5 @@
 #include "render.h"
 #include "engine.h"
-#include "ui.h"
 #include <iostream>
 #include <fstream>
 
@@ -23,102 +22,141 @@ bool Render::LoadConfig(std::string config_file)
     targetFPS = j["targetFPS"].get<int>();
     windowTitle = j["windowTitle"].get<std::string>();
 
-    InitWindow(screenWidth, screenHeight, windowTitle.c_str());
-    SetTargetFPS(targetFPS);
+    //InitWindow(screenWidth, screenHeight, windowTitle.c_str());
+    //SetTargetFPS(targetFPS);
     return true;
 }
 
 bool Render::Start() 
 {
-    camera.position = Vector3{ 0.0f, 200.0f, 1.0f };  // Camera position
-    camera.target = Vector3{ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+    glfwInit();
 
-    //model = LoadModel("../models/plane.obj");                 // Load model
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
+    GLfloat vertices[] =
+	{
+		-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower left corner
+		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower right corner
+		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f // Upper corner
+	};
+
+
+    window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), NULL, NULL);
+    if(window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return false;
+    }
+    //Tell GLFW to make the context of our window the main context on the current thread
+    glfwMakeContextCurrent(window);
+    gladLoadGL();
+
+    //Set glViewport to the size of the window
+    glViewport(0, 0, screenWidth, screenHeight);
+
+
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader); //Compile the vertex shader
+    //Check for compile time errors
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); //Check if the vertex shader compiled successfully
+    if(!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog); //If it didn't, get the info log
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl; //Print the info log
+    }
+
+
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //Create the fragment shader
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL); //Set the source code for the fragment shader
+    glCompileShader(fragmentShader); //Compile the fragment shader
+    //Check for compile time errors
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success); //Check if the fragment shader compiled successfully
+    if(!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog); //If it didn't, get the info log
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl; //Print the info log
+    }
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //Tell OpenGL how to interpret the vertex data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     return true;
 }
 
 bool Render::Update(double delta_time) 
 {
-    if(IsKeyDown(KEY_ESCAPE)) 
+    std::cout << "Render Update" << std::endl;
+
+    if(glfwWindowShouldClose(window))
         return false;
 
-    if(IsKeyDown(KEY_LEFT_SHIFT)) 
-        camera.position.y -= 0.2f;
+    //Poll for events like key presses
+    glfwPollEvents();
+    //Clear the screen to green
+    glClearColor(0.0f, 0.2f, 0.0f, 1.0f); //Set the clear color to black
+    glClear(GL_COLOR_BUFFER_BIT); //Clear the color buffer (background)
 
-    if(IsKeyDown(KEY_SPACE)) 
-        camera.position.y += 0.2f;
+    glUseProgram(shaderProgram); //Use the shader program when we want to render an object
+
+    glBindVertexArray(VAO); //Bind the Vertex Array Object we want to draw
+
+    glDrawArrays(GL_TRIANGLES, 0, 3); //Draw the vertices
+
+    
+    //Swap the buffers
+    glfwSwapBuffers(window);
 
 
-    DisableCursor();
-    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
-    BeginDrawing();
-    ClearBackground(Color{ 204, 229, 255, 255 });
-        
-        BeginMode3D(camera);
-        engine->mapGenerator->DrawMap();
-        //DrawModel(model, Vector3{ 0.0f, 30.0f, 0.0f }, 1.0f, WHITE);
-        EndMode3D();
-        engine->ui->DrawUi();
-    EndDrawing();
 
     return true;
 }
 
 void Render::Cleanup() 
 {
-    CloseWindow();
-}
-
-
-// Subtracts one vector from another
-Vector3 Vector3Subtract(Vector3 v1, Vector3 v2)
-{
-    Vector3 result;
-    result.x = v1.x - v2.x;
-    result.y = v1.y - v2.y;
-    result.z = v1.z - v2.z;
-    return result;
-}
-
-// Normalizes a vector (makes its length 1)
-void Vector3Normalize(Vector3* v)
-{
-    float length = sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
-    v->x /= length;
-    v->y /= length;
-    v->z /= length;
-}
-
-// Calculates the dot product of two vectors
-float Vector3DotProduct(Vector3 v1, Vector3 v2)
-{
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-}
-
-bool Render::IsPointInViewFrustum(Vector3 cameraPosition, Vector3 cameraTarget, Vector3 cameraUp, float fov, Vector3 point)
-{
-    // Calculate the forward vector from the camera position to the target
-    Vector3 cameraForward = Vector3Subtract(cameraTarget, cameraPosition);
-    Vector3Normalize(&cameraForward);
-
-    // Calculate the direction vector from the camera to the point
-    Vector3 direction = Vector3Subtract(point, cameraPosition);
-    Vector3Normalize(&direction);
-
-    // Calculate the dot product of the direction and the camera's forward vector
-    float dotProduct = Vector3DotProduct(direction, cameraForward);
-
-    // Calculate the angle between the direction and the camera's forward vector
-    float angle = acosf(dotProduct);
-
-    // If the angle is less than half of the FOV, the point is within the camera's view
-    return angle < fov / 2.0f;
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 
